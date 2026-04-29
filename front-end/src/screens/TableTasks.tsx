@@ -1,12 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-
-export type Task = {
-  idt_tarefa: number;
-  nom_tarefa: string;
-  dat_criacao: string;
-  des_descricao: string;
-};
+import { Task } from '../types/task';
 
 interface TableTasksProps {
   data: Task[];
@@ -15,6 +9,43 @@ interface TableTasksProps {
   onDelete?: (task: Task) => void;
 }
 
+const TaskRow: React.FC<{
+  task: Task;
+  onView?: (task: Task) => void;
+  onEdit?: (task: Task) => void;
+  onDelete?: (task: Task) => void;
+}> = ({ task, onView, onEdit, onDelete }) => {
+  const handleView = () => {
+    onView?.(task);
+  };
+
+  const handleEdit = () => {
+    onEdit?.(task);
+  };
+
+  const handleDelete = () => {
+    onDelete?.(task);
+  };
+
+  return (
+    <View style={styles.row}>
+      <Text style={styles.cell}>{task.nom_tarefa}</Text>
+      <Text style={styles.cell}>{task.ind_status ?? '—'}</Text>
+      <Text style={styles.cell}>{task.des_tarefa}</Text>
+
+      <View style={styles.actions}>
+        <TouchableOpacity onPress={handleEdit}>
+          <Text style={styles.icon}>✏️</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleDelete}>
+          <Text style={styles.icon}>🗑️</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
 const TableTasks: React.FC<TableTasksProps> = ({
   data,
   onView,
@@ -22,25 +53,7 @@ const TableTasks: React.FC<TableTasksProps> = ({
   onDelete,
 }) => {
   const renderItem = ({ item }: { item: Task }) => (
-    <View style={styles.row}>
-      <Text style={styles.cell}>{item.nom_tarefa}</Text>
-      <Text style={styles.cell}>{item.dat_criacao}</Text>
-      <Text style={styles.cell}>{item.des_descricao}</Text>
-
-      <View style={styles.actions}>
-        <TouchableOpacity onPress={() => onView?.(item)}>
-          <Text style={styles.icon}>👁️</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => onEdit?.(item)}>
-          <Text style={styles.icon}>✏️</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => onDelete?.(item)}>
-          <Text style={styles.icon}>🗑️</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <TaskRow task={item} onView={onView} onEdit={onEdit} onDelete={onDelete} />
   );
 
   return (
@@ -48,7 +61,7 @@ const TableTasks: React.FC<TableTasksProps> = ({
       {/* HEADER FIXO */}
       <View style={styles.header}>
         <Text style={[styles.cell, styles.headerCell]}>Tarefa</Text>
-        <Text style={[styles.cell, styles.headerCell]}>Data criação</Text>
+        <Text style={[styles.cell, styles.headerCell]}>Status</Text>
         <Text style={[styles.cell, styles.headerCell]}>Descrição</Text>
         <Text style={[styles.actions, styles.headerCell]}>Ações</Text>
       </View>
@@ -56,7 +69,8 @@ const TableTasks: React.FC<TableTasksProps> = ({
       <FlatList
         data={data}
         renderItem={renderItem}
-        keyExtractor={(item) => item.idt_tarefa.toString()}
+        keyExtractor={(item, index) => item.idt_tarefa?.toString() ?? index.toString()
+        }
       />
     </View>
   );

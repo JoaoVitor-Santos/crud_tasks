@@ -1,8 +1,11 @@
+version: '3.9'
+
 services:
   db:
     image: postgres:16-alpine
-    container_name: crud_tasks_db
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -12,8 +15,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
       timeout: 5s
       retries: 5
 
@@ -25,11 +28,38 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER}
+      DB_NAME: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
+
+  frontend:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    container_name: crud_tasks_frontend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      EXPO_PUBLIC_API_URL: http://api:8000
+    ports:
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+    depends_on:
+      - api
+    command: npx expo start --localhost
 
 volumes:
   postgres_data:

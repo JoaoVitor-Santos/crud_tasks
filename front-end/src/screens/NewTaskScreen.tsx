@@ -1,14 +1,39 @@
 import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useTasks } from '../contexts/TaskContext';
 
 const NewTaskScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const { createTask } = useTasks();
   const [taskName, setTaskName] = React.useState('');
   const [description, setDescription] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const handleCreateTask = () => {
+  const handleCreateTask = async () => {
     if (!taskName || !description) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
+    }
+
+    setIsLoading(true);
+    try {
+      await createTask({
+        nom_tarefa: taskName,
+        des_tarefa: description,
+      });
+
+      Alert.alert('Sucesso', 'Tarefa criada com sucesso.', [
+        {
+          text: 'OK',
+          onPress: () => navigation.reset({ index: 0, routes: [{ name: 'Home' as never }] }),
+        },
+      ]);
+      navigation.reset({ index: 0, routes: [{ name: 'Home' as never }] });
+    } catch (error: any) {
+      Alert.alert('Erro', error.response?.data?.message || 'Falha ao criar tarefa.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -28,8 +53,12 @@ const NewTaskScreen: React.FC = () => {
         onChangeText={setDescription}
         multiline
       />
-      <TouchableOpacity style={styles.button} onPress={handleCreateTask}>
-        <Text style={styles.buttonText}>Criar Tarefa</Text>
+      <TouchableOpacity style={styles.button} onPress={handleCreateTask} disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Criar Tarefa</Text>
+        )}
       </TouchableOpacity>
     </View>
   );

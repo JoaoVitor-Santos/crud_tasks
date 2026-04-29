@@ -31,13 +31,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Verificar se há token salvo ao iniciar
     const checkToken = async () => {
       const token = await AsyncStorage.getItem('access_token');
       if (token) {
-        // TODO: Validar token com backend ou decodificar
-        // Por enquanto, assumir logado
-        setUser({ id: 1, email: 'user@example.com' }); // Placeholder
+        setUser({ id: 1, email: 'user@example.com' });
       }
     };
     checkToken();
@@ -49,7 +46,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await ApiService.login(data);
       await AsyncStorage.setItem('access_token', response.access_token);
-      // Decodificar JWT para obter o ID do usuário
       const payload = JSON.parse(atob(response.access_token.split('.')[1]));
       setUser({
         id: parseInt(payload.sub),
@@ -57,13 +53,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         name: data.email.split('@')[0],
       });
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Erro ao fazer login');
+      const apiDetail = err.response?.data?.detail;
+      let message = 'Erro ao fazer login';
+
+      if (typeof apiDetail === 'string') {
+        message = apiDetail;
+      } else if (Array.isArray(apiDetail)) {
+        message = apiDetail
+          .map((item) => {
+            if (typeof item === 'string') return item;
+            if (typeof item === 'object' && item !== null) {
+              return item.msg || item.message || JSON.stringify(item);
+            }
+            return String(item);
+          })
+          .join('\n');
+      } else if (err.response?.data?.message) {
+        message = err.response.data.message;
+      }
+
+      setError(message);
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = async () => {
+    try {
+      await ApiService.logout();
+    } catch (error) {
+      console.warn('Erro ao fazer logout no servidor:', error);
+    }
     await AsyncStorage.removeItem('access_token');
     setUser(null);
   };

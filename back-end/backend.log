@@ -1,0 +1,9 @@
+nohup: ignorando entrada
+INFO:     Started server process [83310]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:41262 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37738 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37738 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54508 - "GET /tasks/my-tasks HTTP/1.1" 401 Unauthorized

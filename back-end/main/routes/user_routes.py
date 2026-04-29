@@ -33,3 +33,10 @@ def refresh_token_route(
     token: str = Depends(oauth2_scheme)
 ):
     return user_service.refresh_token(token)
+
+
+@users_routes.post("/logout", status_code=status.HTTP_200_OK)
+def logout_user(
+    token: str = Depends(oauth2_scheme)
+):
+    return user_service.logout_user(token)

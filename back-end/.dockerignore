@@ -1,0 +1,17 @@
+__pycache__
+*.pyc
+.pytest_cache
+.venv
+venv
+*.log
+.env
+.git
+.gitignore
+.dockerignore
+Dockerfile
+node_modules
+.env.*.local
+*.egg-info
+dist
+build
+.DS_Store

@@ -2,20 +2,19 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
+import { useAuthActions } from '../contexts/AuthActionsContext';
 
 const LoginScreen: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login, isLoading, error, user } = useAuth();
+  const { isLoading, error, user } = useAuth();
   const navigation = useNavigation();
-
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Erro', 'Por favor, preencha email e senha.');
-      return;
-    }
-    await login({ email, password });
-  };
+  const {
+    loginEmail,
+    setLoginEmail,
+    loginPassword,
+    setLoginPassword,
+    handleLogin,
+    navigateToRegister
+  } = useAuthActions();
 
   React.useEffect(() => {
     if (user) {
@@ -29,23 +28,23 @@ const LoginScreen: React.FC = () => {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
+        value={loginEmail}
+        onChangeText={setLoginEmail}
         keyboardType="email-address"
         autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
         placeholder="Senha"
-        value={password}
-        onChangeText={setPassword}
+        value={loginPassword}
+        onChangeText={setLoginPassword}
         secureTextEntry
       />
       {error && <Text style={styles.error}>{error}</Text>}
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={isLoading}>
         <Text style={styles.buttonText}>{isLoading ? 'Entrando...' : 'Entrar'}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('Register' as never)}>
+      <TouchableOpacity style={styles.registerButton} onPress={navigateToRegister}>
         <Text style={styles.registerButtonText}>Não tem conta? Cadastre-se</Text>
       </TouchableOpacity>
     </View>

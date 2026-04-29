@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, Boolean
 from ..connection import Base
 
 class UserModel(Base):
@@ -14,25 +14,18 @@ class TaskModel(Base):
     idt_tarefa = Column(Integer, primary_key=True, index=True)
     nom_tarefa = Column(String(255), nullable=False)
     des_tarefa = Column(String(255), nullable=False)
+    ind_ativo = Column(Boolean, default=True, nullable=False)
     idt_usuario = Column(Integer, nullable=False)
-    ind_ativo = Column(String(255), nullable=False)
 
 class StatusModel(Base):
         __tablename__ = "t_status"
 
         idt_status = Column(Integer, primary_key=True, index=True)
-        nom_status = Column(String(255), nullable=False)
+        ind_status = Column(String(255), nullable=False)
 
 class HistoryModel(Base):
     __tablename__ = "t_historico"
 
     idt_historico = Column(Integer, primary_key=True, index=True)
     idt_status = Column(Integer, nullable=False)
-    idt_tarefa = Column(Integer, nullable=False)
-
-class CommentModel(Base):
-    __tablename__ = "t_comentario"
-
-    idt_comentario = Column(Integer, primary_key=True, index=True)
-    des_comentario = Column(String(255), nullable=False)
     idt_tarefa = Column(Integer, nullable=False)

@@ -3,14 +3,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from main.routes.user_routes import users_routes
 from main.routes.task_routes import tasks_routes
+from main.routes.status_routes import status_routes
 from main.connection import Base, engine, SessionLocal
 from main.models.models import StatusModel
 
 STATUS_SEED = [
-    {"idt_status": 1, "nom_status": "pendente"},
-    {"idt_status": 2, "nom_status": "fazendo"},
-    {"idt_status": 3, "nom_status": "pausado"},
-    {"idt_status": 4, "nom_status": "concluido"},
+    {"idt_status": 1, "ind_status": "pendente"},
+    {"idt_status": 2, "ind_status": "fazendo"},
+    {"idt_status": 3, "ind_status": "pausado"},
+    {"idt_status": 4, "ind_status": "concluido"},
 ]
 
 
@@ -24,7 +25,8 @@ def seed_status(db):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=engine)
+    # Tables are now managed by Alembic migrations
+    # Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         seed_status(db)
@@ -45,3 +47,4 @@ app.add_middleware(
 
 app.include_router(users_routes)
 app.include_router(tasks_routes)
+app.include_router(status_routes)
