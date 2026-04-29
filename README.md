@@ -25,6 +25,7 @@ CRUD/
 │       ├── models/         # SQLAlchemy models
 │       ├── routes/         # Rotas da API
 │       ├── services/       # Regras de negócio
+│       ├── validators/     # Validadores dos dados
 │       └── server/         # Configuração da app FastAPI
 └── front-end/
     ├── Dockerfile          # Build do app Expo
