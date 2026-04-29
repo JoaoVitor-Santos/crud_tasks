@@ -34,7 +34,6 @@ CRUD/
     ├── package.json        # Dependências Node.js
     ├── App.tsx             # Componente raiz
     └── src/
-        ├── screens/        # Telas do app
         ├── contexts/       # Contexto utilizados nas telas
         ├── screens/        # Telas do app
         ├── types/          # Exporta as informações recebidas e seus tipos
