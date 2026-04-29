@@ -15,11 +15,13 @@ CRUD/
 ├── .env                    # Variáveis de ambiente para Docker
 ├── docker-compose.yml      # Orquestração de containers
 ├── README.md               # Guia de execução
+
 ├── back-end/
 │   ├── Dockerfile          # Build da API Python
 │   ├── entrypoint.sh       # Inicialização + migrations
 │   ├── requirements.txt    # Dependências Python
 │   ├── run.py              # Ponto de entrada do servidor
+│   ├── tests               # Testes unitários
 │   └── main/
 │       ├── migrations/     # Alembic migrations
 │       ├── models/         # SQLAlchemy models
